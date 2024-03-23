@@ -12,119 +12,110 @@ using PersonalManagement.Models;
 
 namespace PersonalManagement.Controllers
 {
-    public class DeductionsController : Controller
+    public class DeductionTypesController : Controller
     {
         private PersonalManagementContext db = new PersonalManagementContext();
-        private IFactory<Deduction> deductionFactory = new DeductionFactory();
+        private IFactory<DeductionType> deductionTypeFactory = new DeductionTypeFactory();
 
-        // GET: Deductions
+        // GET: DeductionTypes
         public ActionResult Index()
         {
-            var deductions = db.Deductions.Include(d => d.DeductionType).Include(d => d.Employee);
-            return View(deductions.ToList());
+            return View(db.DeductionTypes.ToList());
         }
 
-        // GET: Deductions/Details/5
+        // GET: DeductionTypes/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Deduction deduction = db.Deductions.Find(id);
-            if (deduction == null)
+            DeductionType deductionType = db.DeductionTypes.Find(id);
+            if (deductionType == null)
             {
                 return HttpNotFound();
             }
-            return View(deduction);
+            return View(deductionType);
         }
 
-        // GET: Deductions/Create
+        // GET: DeductionTypes/Create
         public ActionResult Create()
         {
-            ViewBag.DeductionTypeID = new SelectList(db.DeductionTypes, "ID", "Name");
-            ViewBag.EmployeeID = new SelectList(db.Employees, "ID", "Name");
             return View();
         }
 
-        // POST: Deductions/Create
+        // POST: DeductionTypes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Sum,EmployeeID,DeductionTypeID")] Deduction deduction)
+        public ActionResult Create([Bind(Include = "ID,Name")] DeductionType deductionType)
         {
             if (ModelState.IsValid)
             {
-                Deduction newDeduction = deductionFactory.Create(deduction.Sum, deduction.EmployeeID, deduction.DeductionTypeID);
+                DeductionType newDeductionType = deductionTypeFactory.Create(deductionType.Name);
 
-                db.Deductions.Add(newDeduction);
+                db.DeductionTypes.Add(newDeductionType);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.DeductionTypeID = new SelectList(db.DeductionTypes, "ID", "Name", deduction.DeductionTypeID);
-            ViewBag.EmployeeID = new SelectList(db.Employees, "ID", "Name", deduction.EmployeeID);
-            return View(deduction);
+            return View(deductionType);
         }
 
-        // GET: Deductions/Edit/5
+        // GET: DeductionTypes/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Deduction deduction = db.Deductions.Find(id);
-            if (deduction == null)
+            DeductionType deductionType = db.DeductionTypes.Find(id);
+            if (deductionType == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.DeductionTypeID = new SelectList(db.DeductionTypes, "ID", "Name", deduction.DeductionTypeID);
-            ViewBag.EmployeeID = new SelectList(db.Employees, "ID", "Name", deduction.EmployeeID);
-            return View(deduction);
+            return View(deductionType);
         }
 
-        // POST: Deductions/Edit/5
+        // POST: DeductionTypes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Sum,EmployeeID,DeductionTypeID")] Deduction deduction)
+        public ActionResult Edit([Bind(Include = "ID,Name")] DeductionType deductionType)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(deduction).State = EntityState.Modified;
+                db.Entry(deductionType).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.DeductionTypeID = new SelectList(db.DeductionTypes, "ID", "Name", deduction.DeductionTypeID);
-            ViewBag.EmployeeID = new SelectList(db.Employees, "ID", "Name", deduction.EmployeeID);
-            return View(deduction);
+            return View(deductionType);
         }
 
-        // GET: Deductions/Delete/5
+        // GET: DeductionTypes/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Deduction deduction = db.Deductions.Find(id);
-            if (deduction == null)
+            DeductionType deductionType = db.DeductionTypes.Find(id);
+            if (deductionType == null)
             {
                 return HttpNotFound();
             }
-            return View(deduction);
+            return View(deductionType);
         }
 
-        // POST: Deductions/Delete/5
+        // POST: DeductionTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Deduction deduction = db.Deductions.Find(id);
-            db.Deductions.Remove(deduction);
+            DeductionType deductionType = db.DeductionTypes.Find(id);
+            db.DeductionTypes.Remove(deductionType);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

@@ -18,20 +18,24 @@ namespace PersonalManagement.DAL
             var professions = new List<string> { "Software Engineer", "HR Manager", "Accountant", "Marketing Specialist", "Project Manager", "Graphic Designer", "Sales Representative", "Financial Analyst", "Teacher", "Nurse" };
             var deductionTypes = new List<string> { "Health Insurance", "401(k) Contribution", "Flexible Spending Account", "Life Insurance", "Dental Insurance", "Vision Insurance", "Gym Membership", "Transportation Benefit", "Education Assistance", "Childcare Assistance" };
 
+            foreach (var type in deductionTypes)
+            {
+                context.DeductionTypes.Add(new DeductionType { Name = type });
+            }
+
+            context.SaveChanges();
+
             for (int i = 0; i < 10; i++)
             {
                 string firstName, lastName;
-                char sex;
 
                 if (random.Next(2) == 0)
                 {
                     firstName = maleNames[random.Next(maleNames.Count)];
-                    sex = 'M';
                 }
                 else
                 {
                     firstName = femaleNames[random.Next(femaleNames.Count)];
-                    sex = 'F';
                 }
 
                 lastName = lastNames[random.Next(lastNames.Count)];
@@ -40,10 +44,9 @@ namespace PersonalManagement.DAL
                 {
                     Name = firstName,
                     LastName = lastName,
-                    Sex = sex,
                     Profession = professions[random.Next(professions.Count)],
-                    EmployedDate = DateTime.Now.AddYears(-random.Next(1, 10)), // Random employment date within the last 10 years
-                    BirthDate = DateTime.Now.AddYears(-random.Next(20, 60)) // Random birth date between 20 and 60 years ago
+                    EmployedDate = DateTime.Now.AddYears(-random.Next(1, 10)),
+                    BirthDate = DateTime.Now.AddYears(-random.Next(20, 60)) 
                 };
 
                 context.Employees.Add(employee);
@@ -52,8 +55,8 @@ namespace PersonalManagement.DAL
                 {
                     var deduction = new Deduction
                     {
-                        DeductionType = deductionTypes[random.Next(deductionTypes.Count)],
-                        Sum = random.Next(50, 300), // Random deduction amount between 50 and 300
+                        DeductionTypeID = random.Next(1, deductionTypes.Count),
+                        Sum = random.Next(50, 300),
                         EmployeeID = employee.ID,
                     };
 

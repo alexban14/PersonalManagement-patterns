@@ -128,23 +128,33 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\DeductionsController.cs" />
+    <Compile Include="Controllers\DeductionTypesController.cs" />
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="DAL\PersonalManagementContext.cs" />
     <Compile Include="DAL\PersonalManagementInitializer.cs" />
+    <Compile Include="Factories\DeductionFactory.cs" />
+    <Compile Include="Factories\DeductionTypeFactory.cs" />
+    <Compile Include="Factories\EmployeeFactory.cs" />
+    <Compile Include="Factories\IFactory.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Migrations\202402061935534_InitialCreate.cs" />
-    <Compile Include="Migrations\202402061935534_InitialCreate.designer.cs">
+    <Compile Include="Migrations\202402061935534_InitialCreate.Designer.cs">
       <DependentUpon>202402061935534_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\202402071802142_UpdateDeductionModel.cs" />
-    <Compile Include="Migrations\202402071802142_UpdateDeductionModel.designer.cs">
+    <Compile Include="Migrations\202402071802142_UpdateDeductionModel.Designer.cs">
       <DependentUpon>202402071802142_UpdateDeductionModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202403231348071_AddDeductionTypeEntity.cs" />
+    <Compile Include="Migrations\202403231348071_AddDeductionTypeEntity.Designer.cs">
+      <DependentUpon>202403231348071_AddDeductionTypeEntity.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Deduction.cs" />
+    <Compile Include="Models\DeductionType.cs" />
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -174,6 +184,7 @@
     <Content Include="Scripts\bootstrap.esm.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="README.md" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -204,6 +215,11 @@
     <Content Include="Views\Employees\Details.cshtml" />
     <Content Include="Views\Employees\Edit.cshtml" />
     <Content Include="Views\Employees\Index.cshtml" />
+    <Content Include="Views\DeductionTypes\Create.cshtml" />
+    <Content Include="Views\DeductionTypes\Delete.cshtml" />
+    <Content Include="Views\DeductionTypes\Details.cshtml" />
+    <Content Include="Views\DeductionTypes\Edit.cshtml" />
+    <Content Include="Views\DeductionTypes\Index.cshtml" />
     <Content Include="Views\Deductions\Create.cshtml" />
     <Content Include="Views\Deductions\Delete.cshtml" />
     <Content Include="Views\Deductions\Details.cshtml" />
@@ -246,6 +262,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202402071802142_UpdateDeductionModel.resx">
       <DependentUpon>202402071802142_UpdateDeductionModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403231348071_AddDeductionTypeEntity.resx">
+      <DependentUpon>202403231348071_AddDeductionTypeEntity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

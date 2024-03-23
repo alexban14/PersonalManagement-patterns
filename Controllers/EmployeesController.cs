@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using PersonalManagement.DAL;
+using PersonalManagement.Factories;
 using PersonalManagement.Models;
 
 namespace PersonalManagement.Controllers
@@ -14,6 +15,7 @@ namespace PersonalManagement.Controllers
     public class EmployeesController : Controller
     {
         private PersonalManagementContext db = new PersonalManagementContext();
+        private IFactory<Employee> employeeFactory = new EmployeeFactory();
 
         // GET: Employees
         public ActionResult Index(string sortOrder, string searchTerm)
@@ -83,7 +85,9 @@ namespace PersonalManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Employees.Add(employee);
+                Employee newEmployee = employeeFactory.Create(employee.Name, employee.LastName, employee.Profession, employee.EmployedDate, employee.BirthDate);
+
+                db.Employees.Add(newEmployee);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }

@@ -16,7 +16,9 @@ namespace PersonalManagement.DAL
         }
 
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<DeductionType> DeductionTypes { get; set; }
         public DbSet<Deduction> Deductions { get; set; }
+
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
