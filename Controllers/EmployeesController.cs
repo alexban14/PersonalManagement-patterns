@@ -9,13 +9,21 @@ using System.Web.Mvc;
 using PersonalManagement.DAL;
 using PersonalManagement.Factories;
 using PersonalManagement.Models;
+using PersonalManagement.Repositories;
 
 namespace PersonalManagement.Controllers
 {
     public class EmployeesController : Controller
     {
         private PersonalManagementContext db = new PersonalManagementContext();
-        private IFactory<Employee> employeeFactory = new EmployeeFactory();
+        private readonly IFactory<Employee> employeeFactory;
+        private readonly EmployeesRepository employeesRepository;
+
+        public EmployeesController()
+        {
+            employeeFactory = new EmployeeFactory();
+            employeesRepository = new EmployeesRepository();
+        }
 
         // GET: Employees
         public ActionResult Index(string sortOrder, string searchTerm)
@@ -23,7 +31,9 @@ namespace PersonalManagement.Controllers
             ViewBag.NameSortParm = sortOrder == "name" ? "name_desc" : "name";
             ViewBag.ProfessionSortParam = sortOrder ==  "profession" ? "profession_desc" : "profession";
             ViewBag.EmploymentDateSortParm = sortOrder == "employment_date" ? "employment_date_desc" : "employment_date";
-            var employees = from e in db.Employees select e;
+
+            var employees = employeesRepository.GetAll();
+
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 employees = employees.Where(e => e.Name.Contains(searchTerm) || e.LastName.Contains(searchTerm));
@@ -62,7 +72,7 @@ namespace PersonalManagement.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employee employee = db.Employees.Find(id);
+            Employee employee = employeesRepository.GetEmployeeByID(id.Value);
             if (employee == null)
             {
                 return HttpNotFound();
@@ -86,9 +96,8 @@ namespace PersonalManagement.Controllers
             if (ModelState.IsValid)
             {
                 Employee newEmployee = employeeFactory.Create(employee.Name, employee.LastName, employee.Profession, employee.EmployedDate, employee.BirthDate);
+                employeesRepository.CreateEmployee(newEmployee);
 
-                db.Employees.Add(newEmployee);
-                db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -102,7 +111,9 @@ namespace PersonalManagement.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employee employee = db.Employees.Find(id);
+
+            Employee employee = employeesRepository.GetEmployeeByID(id.Value);
+
             if (employee == null)
             {
                 return HttpNotFound();
@@ -119,8 +130,8 @@ namespace PersonalManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(employee).State = EntityState.Modified;
-                db.SaveChanges();
+                employeesRepository.UpdateEmployee(employee);
+
                 return RedirectToAction("Index");
             }
             return View(employee);
@@ -133,7 +144,9 @@ namespace PersonalManagement.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employee employee = db.Employees.Find(id);
+
+            Employee employee = employeesRepository.GetEmployeeByID(id.Value);
+
             if (employee == null)
             {
                 return HttpNotFound();
@@ -146,9 +159,9 @@ namespace PersonalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Employee employee = db.Employees.Find(id);
-            db.Employees.Remove(employee);
-            db.SaveChanges();
+            Employee employee = employeesRepository.GetEmployeeByID(id);
+            employeesRepository.DeleteEmployee(employee);
+
             return RedirectToAction("Index");
         }
 
