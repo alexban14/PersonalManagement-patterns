@@ -9,19 +9,29 @@ using System.Web.Mvc;
 using PersonalManagement.DAL;
 using PersonalManagement.Factories;
 using PersonalManagement.Models;
+using PersonalManagement.Repositories;
 
 namespace PersonalManagement.Controllers
 {
     public class DeductionsController : Controller
     {
-        private PersonalManagementContext db = new PersonalManagementContext();
-        private IFactory<Deduction> deductionFactory = new DeductionFactory();
+        private IFactory<Deduction> deductionFactory;
+        private readonly DeductionsRepository deductionsRepository;
+        private readonly DeductionTypesRepository deductionTypesRepository;
+        private readonly EmployeesRepository employeesRepository;
+
+        public DeductionsController()
+        {
+            deductionFactory = new DeductionFactory();
+            deductionsRepository = new DeductionsRepository();
+            deductionTypesRepository = new DeductionTypesRepository();
+            employeesRepository = new EmployeesRepository();
+        }
 
         // GET: Deductions
         public ActionResult Index()
         {
-            var deductions = db.Deductions.Include(d => d.DeductionType).Include(d => d.Employee);
-            return View(deductions.ToList());
+            return View(deductionsRepository.GetAll());
         }
 
         // GET: Deductions/Details/5
@@ -31,7 +41,9 @@ namespace PersonalManagement.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Deduction deduction = db.Deductions.Find(id);
+
+            Deduction deduction = deductionsRepository.GetDeductionByID(id.Value);
+
             if (deduction == null)
             {
                 return HttpNotFound();
@@ -42,8 +54,8 @@ namespace PersonalManagement.Controllers
         // GET: Deductions/Create
         public ActionResult Create()
         {
-            ViewBag.DeductionTypeID = new SelectList(db.DeductionTypes, "ID", "Name");
-            ViewBag.EmployeeID = new SelectList(db.Employees, "ID", "Name");
+            ViewBag.DeductionTypeID = new SelectList(deductionTypesRepository.GetAll(), "ID", "Name");
+            ViewBag.EmployeeID = new SelectList(employeesRepository.GetAll(), "ID", "Name");
             return View();
         }
 
@@ -58,13 +70,13 @@ namespace PersonalManagement.Controllers
             {
                 Deduction newDeduction = deductionFactory.Create(deduction.Sum, deduction.EmployeeID, deduction.DeductionTypeID);
 
-                db.Deductions.Add(newDeduction);
-                db.SaveChanges();
+                deductionsRepository.CreateDeduction(newDeduction);
+
                 return RedirectToAction("Index");
             }
 
-            ViewBag.DeductionTypeID = new SelectList(db.DeductionTypes, "ID", "Name", deduction.DeductionTypeID);
-            ViewBag.EmployeeID = new SelectList(db.Employees, "ID", "Name", deduction.EmployeeID);
+            ViewBag.DeductionTypeID = new SelectList(deductionTypesRepository.GetAll(), "ID", "Name", deduction.DeductionTypeID);
+            ViewBag.EmployeeID = new SelectList(employeesRepository.GetAll(), "ID", "Name", deduction.EmployeeID);
             return View(deduction);
         }
 
@@ -75,13 +87,16 @@ namespace PersonalManagement.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Deduction deduction = db.Deductions.Find(id);
+
+            Deduction deduction = deductionsRepository.GetDeductionByID(id.Value);
+
             if (deduction == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.DeductionTypeID = new SelectList(db.DeductionTypes, "ID", "Name", deduction.DeductionTypeID);
-            ViewBag.EmployeeID = new SelectList(db.Employees, "ID", "Name", deduction.EmployeeID);
+            ViewBag.DeductionTypeID = new SelectList(deductionTypesRepository.GetAll(), "ID", "Name", deduction.DeductionTypeID);
+            ViewBag.EmployeeID = new SelectList(employeesRepository.GetAll(), "ID", "Name", deduction.EmployeeID);
+
             return View(deduction);
         }
 
@@ -94,12 +109,14 @@ namespace PersonalManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(deduction).State = EntityState.Modified;
-                db.SaveChanges();
+                deductionsRepository.UpdateDeduction(deduction);
+
                 return RedirectToAction("Index");
             }
-            ViewBag.DeductionTypeID = new SelectList(db.DeductionTypes, "ID", "Name", deduction.DeductionTypeID);
-            ViewBag.EmployeeID = new SelectList(db.Employees, "ID", "Name", deduction.EmployeeID);
+
+            ViewBag.DeductionTypeID = new SelectList(deductionTypesRepository.GetAll(), "ID", "Name", deduction.DeductionTypeID);
+            ViewBag.EmployeeID = new SelectList(employeesRepository.GetAll(), "ID", "Name", deduction.EmployeeID);
+
             return View(deduction);
         }
 
@@ -110,7 +127,9 @@ namespace PersonalManagement.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Deduction deduction = db.Deductions.Find(id);
+
+            Deduction deduction = deductionsRepository.GetDeductionByID(id.Value);
+
             if (deduction == null)
             {
                 return HttpNotFound();
@@ -123,19 +142,10 @@ namespace PersonalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Deduction deduction = db.Deductions.Find(id);
-            db.Deductions.Remove(deduction);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+            Deduction deduction = deductionsRepository.GetDeductionByID(id);
+            deductionsRepository.DeleteDeduction(deduction);
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            return RedirectToAction("Index");
         }
     }
 }

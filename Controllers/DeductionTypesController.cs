@@ -9,18 +9,25 @@ using System.Web.Mvc;
 using PersonalManagement.DAL;
 using PersonalManagement.Factories;
 using PersonalManagement.Models;
+using PersonalManagement.Repositories;
 
 namespace PersonalManagement.Controllers
 {
     public class DeductionTypesController : Controller
     {
-        private PersonalManagementContext db = new PersonalManagementContext();
-        private IFactory<DeductionType> deductionTypeFactory = new DeductionTypeFactory();
+        private readonly IFactory<DeductionType> deductionTypeFactory;
+        private readonly DeductionTypesRepository deductionTypesRepository;
+
+        public DeductionTypesController()
+        {
+            deductionTypeFactory = new DeductionTypeFactory();
+            deductionTypesRepository = new DeductionTypesRepository();
+        }
 
         // GET: DeductionTypes
         public ActionResult Index()
         {
-            return View(db.DeductionTypes.ToList());
+            return View(deductionTypesRepository.GetAll());
         }
 
         // GET: DeductionTypes/Details/5
@@ -30,7 +37,9 @@ namespace PersonalManagement.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DeductionType deductionType = db.DeductionTypes.Find(id);
+
+            DeductionType deductionType = deductionTypesRepository.GetByID(id.Value);
+
             if (deductionType == null)
             {
                 return HttpNotFound();
@@ -55,8 +64,8 @@ namespace PersonalManagement.Controllers
             {
                 DeductionType newDeductionType = deductionTypeFactory.Create(deductionType.Name);
 
-                db.DeductionTypes.Add(newDeductionType);
-                db.SaveChanges();
+                deductionTypesRepository.CreateDeductionType(newDeductionType);
+
                 return RedirectToAction("Index");
             }
 
@@ -70,7 +79,9 @@ namespace PersonalManagement.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DeductionType deductionType = db.DeductionTypes.Find(id);
+
+            DeductionType deductionType = deductionTypesRepository.GetByID(id.Value);
+
             if (deductionType == null)
             {
                 return HttpNotFound();
@@ -87,8 +98,8 @@ namespace PersonalManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(deductionType).State = EntityState.Modified;
-                db.SaveChanges();
+                deductionTypesRepository.UpdateDeductionType(deductionType);
+
                 return RedirectToAction("Index");
             }
             return View(deductionType);
@@ -101,7 +112,9 @@ namespace PersonalManagement.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DeductionType deductionType = db.DeductionTypes.Find(id);
+
+            DeductionType deductionType = deductionTypesRepository.GetByID(id.Value);
+
             if (deductionType == null)
             {
                 return HttpNotFound();
@@ -114,19 +127,11 @@ namespace PersonalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            DeductionType deductionType = db.DeductionTypes.Find(id);
-            db.DeductionTypes.Remove(deductionType);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+            DeductionType deductionType = deductionTypesRepository.GetByID(id);
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            deductionTypesRepository.DeleteDeductionType(deductionType);
+
+            return RedirectToAction("Index");
         }
     }
 }
