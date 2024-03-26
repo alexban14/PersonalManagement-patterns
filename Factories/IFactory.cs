@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PersonalManagement.Factories
 {
-    internal interface IFactory<T>
+    public interface IFactory<T>
     {
         T Create(params object[] args);
     }

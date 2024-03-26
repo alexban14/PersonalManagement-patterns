@@ -7,7 +7,7 @@ using System.Web;
 
 namespace PersonalManagement.Repositories
 {
-    public class EmployeesRepository
+    public class EmployeesRepository : IRepository<Employee>
     {
         PersonalManagementContext context;
 
@@ -21,26 +21,26 @@ namespace PersonalManagement.Repositories
             return context.Employees.ToList();
         }
 
-        public Employee GetEmployeeByID(int ID)
+        public Employee GetById(int? ID)
         {
             return context.Employees.Find(ID);
         }
 
-        public bool CreateEmployee(Employee employee)
+        public bool Create(Employee employee)
         {
             context.Employees.Add(employee);
 
             return context.SaveChanges() > 0;
         }
 
-        public bool UpdateEmployee(Employee employee)
+        public bool Edit(Employee employee)
         {
             context.Entry(employee).State = System.Data.Entity.EntityState.Modified;
 
             return context.SaveChanges() > 0;
         }
 
-        public bool DeleteEmployee(Employee employee)
+        public bool Delete(Employee employee)
         {
             context.Entry(employee).State = System.Data.Entity.EntityState.Deleted;
 

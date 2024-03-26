@@ -160,6 +160,10 @@
     <Compile Include="Repositories\DeductionsRepository.cs" />
     <Compile Include="Repositories\DeductionTypesRepository.cs" />
     <Compile Include="Repositories\EmployeesRepository.cs" />
+    <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Services\FileLogger.cs" />
+    <Compile Include="Services\ILogger.cs" />
+    <Compile Include="Repositories\LoggingRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
