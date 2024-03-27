@@ -7,7 +7,7 @@ using System.Web;
 
 namespace PersonalManagement.Repositories
 {
-    public class DeductionTypesRepository
+    public class DeductionTypesRepository : IRepository<DeductionType>
     {
 
         PersonalManagementContext context;
@@ -22,26 +22,26 @@ namespace PersonalManagement.Repositories
             return context.DeductionTypes.ToList();
         }
 
-        public DeductionType GetByID(int ID)
+        public DeductionType GetById(int? ID)
         {
             return context.DeductionTypes.Find(ID);
         }
 
-        public bool CreateDeductionType(DeductionType deductionType)
+        public bool Create(DeductionType deductionType)
         {
             context.DeductionTypes.Add(deductionType);
 
             return context.SaveChanges() > 0;
         }
 
-        public bool UpdateDeductionType(DeductionType deductionType)
+        public bool Edit(DeductionType deductionType)
         {
             context.Entry(deductionType).State = System.Data.Entity.EntityState.Modified;
 
             return context.SaveChanges() > 0;
         }
 
-        public bool DeleteDeductionType(DeductionType deductionType)
+        public bool Delete(DeductionType deductionType)
         {
             context.Entry(deductionType).State = System.Data.Entity.EntityState.Deleted;
 

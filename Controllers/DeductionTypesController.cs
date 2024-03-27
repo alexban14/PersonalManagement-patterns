@@ -10,24 +10,25 @@ using PersonalManagement.DAL;
 using PersonalManagement.Factories;
 using PersonalManagement.Models;
 using PersonalManagement.Repositories;
+using PersonalManagement.Services;
 
 namespace PersonalManagement.Controllers
 {
     public class DeductionTypesController : Controller
     {
-        private readonly IFactory<DeductionType> deductionTypeFactory;
-        private readonly DeductionTypesRepository deductionTypesRepository;
+        private readonly IFactory<DeductionType> _deductionTypeFactory;
+        private readonly IRepository<DeductionType> _repository;
 
         public DeductionTypesController()
         {
-            deductionTypeFactory = new DeductionTypeFactory();
-            deductionTypesRepository = new DeductionTypesRepository();
+            _deductionTypeFactory = new DeductionTypeFactory();
+            _repository = new LoggingRepository<DeductionType>(new DeductionTypesRepository(), new FileLogger("deductionTypes_controller_log"));
         }
 
         // GET: DeductionTypes
         public ActionResult Index()
         {
-            return View(deductionTypesRepository.GetAll());
+            return View(_repository.GetAll());
         }
 
         // GET: DeductionTypes/Details/5
@@ -38,7 +39,7 @@ namespace PersonalManagement.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            DeductionType deductionType = deductionTypesRepository.GetByID(id.Value);
+            DeductionType deductionType = _repository.GetById(id.Value);
 
             if (deductionType == null)
             {
@@ -62,9 +63,9 @@ namespace PersonalManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                DeductionType newDeductionType = deductionTypeFactory.Create(deductionType.Name);
+                DeductionType newDeductionType = _deductionTypeFactory.Create(deductionType.Name);
 
-                deductionTypesRepository.CreateDeductionType(newDeductionType);
+                _repository.Create(newDeductionType);
 
                 return RedirectToAction("Index");
             }
@@ -80,7 +81,7 @@ namespace PersonalManagement.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            DeductionType deductionType = deductionTypesRepository.GetByID(id.Value);
+            DeductionType deductionType = _repository.GetById(id.Value);
 
             if (deductionType == null)
             {
@@ -98,7 +99,7 @@ namespace PersonalManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                deductionTypesRepository.UpdateDeductionType(deductionType);
+                _repository.Edit(deductionType);
 
                 return RedirectToAction("Index");
             }
@@ -113,7 +114,7 @@ namespace PersonalManagement.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            DeductionType deductionType = deductionTypesRepository.GetByID(id.Value);
+            DeductionType deductionType = _repository.GetById(id.Value);
 
             if (deductionType == null)
             {
@@ -127,9 +128,9 @@ namespace PersonalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            DeductionType deductionType = deductionTypesRepository.GetByID(id);
+            DeductionType deductionType = _repository.GetById(id);
 
-            deductionTypesRepository.DeleteDeductionType(deductionType);
+            _repository.Delete(deductionType);
 
             return RedirectToAction("Index");
         }
