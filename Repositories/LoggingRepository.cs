@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 
 namespace PersonalManagement.Repositories
@@ -22,6 +23,7 @@ namespace PersonalManagement.Repositories
             try
             {
                 logger.LogCreation(typeof(T).Name, $"New entity created: {entity}");
+
                 return repository.Create(entity);
             }
             catch (Exception ex)
@@ -35,7 +37,10 @@ namespace PersonalManagement.Repositories
         {
             try
             {
-                logger.LogEdit(typeof(T).Name, $"Entity with id: {entity} edited.");
+                var id = GetEntityId(entity);
+
+                logger.LogEdit(typeof(T).Name, $"Entity edited: ID={id}.");
+
                 return repository.Edit(entity);
             }
             catch (Exception ex)
@@ -49,7 +54,9 @@ namespace PersonalManagement.Repositories
         {
             try
             {
-                logger.LogDeletion(typeof(T).Name, $"Entity deleted: {entity}");
+                var id = GetEntityId(entity);
+
+                logger.LogDeletion(typeof(T).Name, $"Entity deleted: ID={id}.");
                 return repository.Delete(entity);
             }
             catch (Exception ex)
@@ -84,6 +91,24 @@ namespace PersonalManagement.Repositories
             {
                 logger.LogException(ex);
                 throw;
+            }
+        }
+
+        // helper methods
+        private int GetEntityId(T entity)
+        {
+            Type entityType = entity.GetType();
+
+            PropertyInfo idProperty = entityType.GetProperty("ID");
+
+            if (idProperty != null && idProperty.PropertyType == typeof(int))
+            {
+                int id = (int)idProperty.GetValue(entity);
+                return id;
+            }
+            else
+            {
+                throw new InvalidOperationException("Entity does not have a valid ID property.");
             }
         }
     }
